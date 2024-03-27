@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 import tarfile
 from astropy.table import Table
 import os
+import healpy as hp
 
 _filters = ['jwst_nircam_f200w']
 _utf8_filter_type = h5py.string_dtype('utf-8', 5)
@@ -197,7 +198,7 @@ def _cut_stamps_fn(directory_path,output_directory,phot_table,field_identifier,s
                         
                     except:
                         print('error..appending a blank image')
-                        JWST_stamps.append(np.zeros([_image_size,_image_size]))
+                        JWST_stamps.append(np.zeros((_image_size,_image_size)))
                         idvec.append(idn)
                         
                         ravec.append(ra)
@@ -233,8 +234,8 @@ def _processing_fn(args):
     if not os.path.exists(os.path.dirname(output_folder)):
         os.makedirs(os.path.dirname(output_folder))
 
-    output_filename = os.path.join(output_folder,field_identifier+'.hdf5')
-
+    #output_filename = os.path.join(output_folder,field_identifier+'.hdf5')
+    filter_string = '-'.join(_filter_list)
     # count how many times we run into problems with the images
     n_problems = 0
 
@@ -252,22 +253,49 @@ def _processing_fn(args):
 
             # Accessing the lists from the loaded data
             JWST_stamps = data_loaded['JWST_stamps']
-            idvec = data_loaded['idvec']
-            ravec = data_loaded['ravec']
-            decvec = data_loaded['decvec']
-            catalog = data_loaded['phot_table']
-            pixel_scale = data_loaded['pixel_scale']
+        
+        # assumng these are all the same for all objects
+        idvec = data_loaded['idvec']
+        ravec = data_loaded['ravec']
+        decvec = data_loaded['decvec']
+        catalog = data_loaded['phot_table']
+        pixel_scale = data_loaded['pixel_scale']
 
-        print(np.array(JWST_stamps).shape)
+        #print(np.array(JWST_stamps).shape)
         JWST_multilambda[f] = np.array(JWST_stamps)
 
 
-        #pdb.set_trace()
+         # Add healpix index to the catalog
+        catalog['healpix'] = hp.ang2pix(64, catalog['ra'], catalog['dec'], lonlat=True, nest=True)
+    
+        # Group objects by healpix index
+        groups = catalog.group_by('healpix')
+
+    # Loop over the groups
+    #map_args = []
+    for group in groups.groups:
+        # Create a filename for the group
+        group_filename = os.path.join(output_folder, '{}/healpix={}/001-of-001.hdf5'.format(field_identifier+'_'+str(subsample)+'_'+filter_string,group['healpix'][0]))
+        #map_args.append((group, cutouts_filename, group_filename))
+        # Extract the directory path from the group_filename
+        directory_path = os.path.dirname(group_filename)
+
+        # Check if the directory exists
+        if not os.path.exists(directory_path):
+            # If the directory does not exist, create it
+            os.makedirs(directory_path)
 
         
        
+
+
     # Loop over the indices and yield the requested data
-    for c, id, ra, dec in zip(range(len(idvec)),idvec, ravec,decvec):
+    #for c, id, ra, dec in zip(range(len(idvec)),idvec, ravec,decvec):
+    for row in group:
+        c = row['index']  # Assuming there is an 'index' column specifying the object's index
+        id = row['id']  # Assuming there is an 'id' column
+        #ra = row['ra']  # Assuming there is a 'ra' column
+        #dec = row['dec']  # Assuming there is a 'dec' column
 
         key = str(id)
 
@@ -333,7 +361,7 @@ def _processing_fn(args):
     assert len(catalog) == len(images), "There was an error in the join operation"
 
     # Save all columns to disk in HDF5 format
-    with h5py.File(output_filename, 'w') as hdf5_file:
+    with h5py.File(group_filename, 'w') as hdf5_file:
         for key in catalog.colnames:
             hdf5_file.create_dataset(key, data=catalog[key])
 
@@ -357,7 +385,7 @@ print('downloading data')
 phot_table=download_jwst_DJA(base_url,output_directory,field_identifier)
 phot_table.rename_column('id','object_id')
 print('cutting stamps')
-_cut_stamps_fn(directory_path,output_directory,phot_table,field_identifier,subsample=100)
+_cut_stamps_fn(directory_path,output_directory,phot_table,field_identifier,subsample=subsample)
 print('saving to hdf5')
 _processing_fn([output_directory,field_identifier,subsample])
 
