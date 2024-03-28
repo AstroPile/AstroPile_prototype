@@ -158,10 +158,14 @@ class DECaLS(datasets.GeneratorBasedBuilder):
                     # Extract the indices of requested ids in the catalog 
                     i = sort_index[np.searchsorted(sorted_ids, k)]
                     # Parse image data
-                    example = {'image':  [{'band': data['image_band'][i][j].decode('utf-8'),
-                               'array': data['image_array'][i][j],
-                               'psf_fwhm': data['image_psf_fwhm'][i][j],
-                               'scale': data['image_scale'][i][j]} for j, _ in enumerate( self._bands )]
+                    example = {'image':  [
+                        {
+                            'band': data['image_band'][i][j].decode('utf-8'),
+                            'array': data['image_array'][i][j],
+                            'psf_fwhm': data['image_psf_fwhm'][i][j],
+                            'scale': data['image_scale'][i][j]
+                        }
+                               for j, _ in enumerate( self._bands )]
                     }
                     # Add all other requested features
                     for f in _FLOAT_FEATURES:

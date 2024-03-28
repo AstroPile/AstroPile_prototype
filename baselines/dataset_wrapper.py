@@ -1,12 +1,12 @@
 import sys
 sys.path.append('../')
 import torch
-from lightning import LightningDataModule
+from pytorch_lightning import LightningDataModule
 from torch.utils.data import Dataset, DataLoader
-from utils import split_dataset, compute_dataset_statistics, normalize_sample, get_nested
+from dataset_utils import split_dataset, compute_dataset_statistics, normalize_sample, get_nested
 from typing import Any
 
-class PhotoZWrapper(LightningDataModule):
+class DatasetWrapper(LightningDataModule):
     def __init__(self, 
                  train_dataset: Dataset, 
                  test_dataset: Dataset,
