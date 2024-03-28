@@ -61,7 +61,7 @@ class JWST(datasets.GeneratorBasedBuilder):
     BUILDER_CONFIGS = [
         datasets.BuilderConfig(name="jwst_ceers_nircam", 
                                version=VERSION, 
-                               data_files=DataFilesPatternsDict.from_patterns({'train': ['../../../../../data/astropile/ceers/ceers-full-grizli-v7.2_200_f115w-f150w-f200w-f277w-f356w-f444w/healpix=*/*.hdf5']}),
+                               data_files=DataFilesPatternsDict.from_patterns({'train': ['../../../../../data/astropile/ceers/ceers-full-grizli-v7.2_all_32_f115w-f150w-f200w-f277w-f356w-f444w/healpix=*/*.hdf5']}),
                                description="JWST NIRCam images CEERS sruvey"),
     ]
 
