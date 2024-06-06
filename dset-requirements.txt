@@ -1,6 +1,6 @@
 healpy
-datasets 
-h5py 
+datasets
+h5py
 
 #TESS Specific dependencies
 astroquery
@@ -10,6 +10,9 @@ git+https://github.com/changhoonhahn/provabgs.git
 
 #SN specific dependencies
 sncosmo
+
+# SN baseline specific dependencies
+git+https://github.com/ado8/snmachine
 
 # HSC specific dependencies
 git+https://github.com/eiffl/unagi.git@update
@@ -24,4 +27,3 @@ tqdm
 sherpa>=4.15.0
 pyvo>=1.4
 astropy
-
