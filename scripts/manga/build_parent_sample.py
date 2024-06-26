@@ -210,7 +210,7 @@ def process_single_plateifu(args: tuple) -> dict:
         # pad rest with 0s
         flux = flux.reshape(nwave, nspaxels)
         ivar = np.pad(hdulist['IVAR'].data, pad_arr).reshape(nwave, nspaxels)
-        mask = np.pad(hdulist['FLUX'].data, pad_arr, constant_values=1024).reshape(nwave, nspaxels)
+        mask = np.pad(hdulist['MASK'].data, pad_arr, constant_values=1024).reshape(nwave, nspaxels)
         lsf = np.pad(hdulist['LSFPOST'].data, pad_arr).reshape(nwave, nspaxels)
 
         wave = hdulist['WAVE'].data.astype(np.float32)

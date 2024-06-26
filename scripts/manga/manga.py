@@ -57,7 +57,7 @@ class MaNGA(datasets.GeneratorBasedBuilder):
         datasets.BuilderConfig(name="manga",
                                version=VERSION,
                                data_files=DataFilesPatternsDict.from_patterns({'train': ['out/manga/healpix=*/*.hdf5']}),
-                               description="SDSS MaNGA IFU log data cubes"),
+                               description="SDSS-IV MaNGA IFU datacubes and maps"),
     ]
 
     DEFAULT_CONFIG_NAME = "manga"
@@ -90,7 +90,7 @@ class MaNGA(datasets.GeneratorBasedBuilder):
             "lambda": Array2D(shape=(1, cls._spectrum_size), dtype='float32'),
             "x": Value('int8'),
             "y": Value('int8'),
-            'spaxel_idx': Value('int8'),
+            'spaxel_idx': Value('int16'),
             "flux_units": Value('string'),
             "lambda_units": Value('string'),
             "skycoo_x": Value('float32'),
@@ -176,6 +176,13 @@ class MaNGA(datasets.GeneratorBasedBuilder):
         """ Yields examples as (key, example) tuples.
         """
 
+        def reshape_if_needed(col_name, data):
+            """ reshape the array data if it is in the list of columns """
+            # define the columns that need reshaping - 1d array columns
+            if col_name in {'flux', 'ivar', 'mask', 'lsf', 'lambda'}:
+                return data.reshape(1, -1)
+            return data
+
         for file in itertools.chain.from_iterable(files):
             with h5py.File(file, "r") as data:
 
@@ -201,7 +208,11 @@ class MaNGA(datasets.GeneratorBasedBuilder):
                     spax_cols = ('flux', 'ivar', 'mask', 'lsf', 'lambda', 'x', 'y', 'spaxel_idx', 'flux_units', 'lambda_units',
                                  'skycoo_x', 'skycoo_y', 'ellcoo_r', 'ellcoo_rre', 'ellcoo_rkpc', 'ellcoo_theta', 'skycoo_units',
                                  'ellcoo_r_units', 'ellcoo_rre_units', 'ellcoo_rkpc_units', 'ellcoo_theta_units')
-                    example['spaxels'] = [dict(zip(spax_cols, i)) for i in grp['spaxels']]
+
+                    example['spaxels'] = [
+                        {col_name: reshape_if_needed(col_name, i[col_idx]) for col_idx, col_name in enumerate(spax_cols)}
+                        for i in grp['spaxels']
+                    ]
 
                     im_cols = ('filter', 'array', 'array_units', 'psf', 'psf_units', 'scale', 'scale_units')
                     example['images'] = [dict(zip(im_cols, i)) for i in grp['images']]
