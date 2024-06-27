@@ -43,9 +43,9 @@ _DESCRIPTION = """\
 Time-series dataset from the Center for Astronomy 3 Data Release.
 """
 
-_HOMEPAGE = "https://lweb.cfa.harvard.edu/supernova/CfA3/"
+_HOMEPAGE = "https://lweb.cfa.harvard.edu/supernova/"
 
-_LICENSE = "CC BY 3.0"
+_LICENSE = "CC BY 4.0"
 
 _VERSION = "0.0.1"
 

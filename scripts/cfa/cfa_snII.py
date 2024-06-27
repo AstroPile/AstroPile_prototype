@@ -44,7 +44,7 @@ _DESCRIPTION = """\
 Time-series dataset from the Center for Astronomy SN II Data Release.
 """
 
-_HOMEPAGE = "https://lweb.cfa.harvard.edu/supernova/fmalcolm2017/"
+_HOMEPAGE = "https://lweb.cfa.harvard.edu/supernova/"
 
 _LICENSE = "CC BY 3.0"
 

@@ -11,86 +11,86 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import itertools
-
 import datasets
+from datasets import Features, Value, Sequence
+from datasets.data_files import DataFilesPatternsDict
+import itertools
 import h5py
 import numpy as np
-from datasets import Array2D, Features, Sequence, Value
-from datasets.data_files import DataFilesPatternsDict
+import os
 
 _CITATION = """\
-@ARTICLE{2014ApJS..213...19B,
-    author = {{Bianco}, F.~B. and {Modjaz}, M. and {Hicken}, M. and {Friedman}, A. and {Kirshner}, R.~P. and {Bloom}, J.~S. and {Challis}, P. and {Marion}, G.~H. and {Wood-Vasey}, W.~M. and {Rest}, A.},
-    title = "{Multi-color Optical and Near-infrared Light Curves of 64 Stripped-envelope Core-Collapse Supernovae}",
-    journal = {\apjs},
-    keywords = {supernovae: general, Astrophysics - Solar and Stellar Astrophysics, Astrophysics - High Energy Astrophysical Phenomena},
-    year = 2014,
-    month = aug,
-    volume = {213},
-    number = {2},
-    eid = {19},
-    pages = {19},
-    doi = {10.1088/0067-0049/213/2/19},
+@ARTICLE{2017AJ....154..211K,
+    author = {{Krisciunas}, Kevin and {Contreras}, Carlos and {Burns}, Christopher R. and {Phillips}, M.~M. and {Stritzinger}, Maximilian D. and {Morrell}, Nidia and {Hamuy}, Mario and {Anais}, Jorge and {Boldt}, Luis and {Busta}, Luis and {Campillay}, Abdo and {Castell{\'o}n}, Sergio and {Folatelli}, Gast{\'o}n and {Freedman}, Wendy L. and {Gonz{\'a}lez}, Consuelo and {Hsiao}, Eric Y. and {Krzeminski}, Wojtek and {Persson}, Sven Eric and {Roth}, Miguel and {Salgado}, Francisco and {Ser{\'o}n}, Jacqueline and {Suntzeff}, Nicholas B. and {Torres}, Sim{\'o}n and {Filippenko}, Alexei V. and {Li}, Weidong and {Madore}, Barry F. and {DePoy}, D.~L. and {Marshall}, Jennifer L. and {Rheault}, Jean-Philippe and {Villanueva}, Steven},
+    title = "{The Carnegie Supernova Project. I. Third Photometry Data Release of Low-redshift Type Ia Supernovae and Other White Dwarf Explosions}",
+    journal = {\aj},
+    keywords = {instrumentation: photometers, supernovae: general, surveys, techniques: photometric, Astrophysics - Instrumentation and Methods for Astrophysics, Astrophysics - High Energy Astrophysical Phenomena},
+    year = 2017,
+    month = nov,
+    volume = {154},
+    number = {5},
+    eid = {211},
+    pages = {211},
+    doi = {10.3847/1538-3881/aa8df0},
     archivePrefix = {arXiv},
-    eprint = {1405.1428},
-    primaryClass = {astro-ph.SR},
-    adsurl = {https://ui.adsabs.harvard.edu/abs/2014ApJS..213...19B},
+    eprint = {1709.05146},
+    primaryClass = {astro-ph.IM},
+    adsurl = {https://ui.adsabs.harvard.edu/abs/2017AJ....154..211K},
     adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
+
 """
 
 _DESCRIPTION = """\
-Time-series dataset from the Center for Astronomy 3 Stripped-envelope Core-collapse SN Data Release.
+Time-series dataset from the Carnegie Supernova Project I Data Release 3 (CSP-I DR3).
 """
 
-_HOMEPAGE = "https://lweb.cfa.harvard.edu/supernova/lc.standardsystem.sesn_allphot.dat"
+_HOMEPAGE = "https://csp.obs.carnegiescience.edu/"
 
-_LICENSE = ""
+_LICENSE = "CC BY 4.0"
 
 _VERSION = "0.0.1"
 
-_STR_FEATURES = ["object_id", "obj_type"]
+_STR_FEATURES = [
+    "object_id",
+    "spec_class",
+]
 
 _FLOAT_FEATURES = [
     "ra",
     "dec",
+    "redshift",
 ]
 
 
-class CFA3_4SH(datasets.GeneratorBasedBuilder):
+class CSPIDR3(datasets.GeneratorBasedBuilder):
     """"""
 
     VERSION = _VERSION
 
     BUILDER_CONFIGS = [
         datasets.BuilderConfig(
-            name="cfa3_4sh",
+            name="csp_dr3",
             version=VERSION,
-            data_files=DataFilesPatternsDict.from_patterns({"train": ["./*/*.hdf5"]}),
-            description="Light curves from CFA Stripped-envelope Core-collapse Supernova sample",
+            data_files=DataFilesPatternsDict.from_patterns({"train": ["./*/*.hdf5"]}), # This seems fairly inflexible. Probably a massive failure point.
+            description="Light curves from CSP-I DR3",
         ),
     ]
 
-    DEFAULT_CONFIG_NAME = "cfa3_4sh"
-
-    _bands = ["U", "B", "V", "R", "I", "r'", "i'", "J", "H", "Ks"]
+    DEFAULT_CONFIG_NAME = "csp_dr3"
 
     @classmethod
     def _info(self):
         """Defines the features available in this dataset."""
-        # Starting with all features common to image datasets
+        # Starting with all features common to light curve datasets
         features = {
-            "lightcurve": Sequence(
-                feature={
-                    "band": Value("string"),
-                    "time": Value("float32"),
-                    "mag": Value("float32"),
-                    "mag_err": Value("float32"),
-                }
-            ),
+            'lightcurve': Sequence(feature={
+                "band": Value("string"),
+                "mag": Value("float32"),
+                "mag_err": Value("float32"),
+                "time": Value("float32"),
+            }),
         }
-        ######################################
 
         # Adding all values from the catalog
         for f in _FLOAT_FEATURES:
@@ -149,30 +149,26 @@ class CFA3_4SH(datasets.GeneratorBasedBuilder):
                 else:
                     keys = [data["object_id"][()]]
 
+                # Preparing an index for fast searching through the catalog
+                sort_index = np.argsort(data["object_id"][()])  # Accessing the scalar index
+                sorted_ids = [data["object_id"][()]]  # Ensure this is a list of one element
+
                 for k in keys:
+                    # Extract the indices of requested ids in the catalog
+                    i = sort_index[np.searchsorted(sorted_ids, k)]
                     # Parse data
                     idxs = np.arange(0, data["mag"].shape[0])
                     band_idxs = idxs.repeat(data["mag"].shape[-1]).reshape(
-                        len([bstr.decode("utf-8") for bstr in data["bands"][()]]), -1
+                        data["bands"].shape[0], -1
                     )
+                    bands = [bstr.decode('utf-8') for bstr in data["bands"][()]]
                     example = {
-                        "lightcurve": {
-                            "band": np.asarray(
-                                [
-                                    data["bands"][()][band_number]
-                                    for band_number in band_idxs.flatten().astype(
-                                        "int32"
-                                    )
-                                ]
-                            ).astype("str"),
-                            "time": np.asarray(data["time"])
-                            .flatten()
-                            .astype("float32"),
+                        'lightcurve': {
+                            "band": np.asarray([bands[band_number] for band_number in band_idxs.flatten().astype("int32")]).astype("str"),
+                            "time": np.asarray(data["time"]).flatten().astype("float32"),
                             "mag": np.asarray(data["mag"]).flatten().astype("float32"),
-                            "mag_err": np.asarray(data["mag_err"])
-                            .flatten()
-                            .astype("float32"),
-                        },
+                            "mag_err": np.asarray(data["mag_err"]).flatten().astype("float32"),
+                        }
                     }
                     # Add remaining features
                     for f in _FLOAT_FEATURES:

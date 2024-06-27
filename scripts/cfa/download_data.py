@@ -69,24 +69,24 @@ def cfa_general_logic(args):
 file_names = {
     "cfa_snII": "cfa_snII_lightcurvesndstars.june2017.tar",
     "cfa3": "cfa3lightcurves.standardsystem.txt",
-    "cfa3_4sh": "lc.standardsystem.sesn_allphot.dat",
+    "cfa_SECCSN": "lc.standardsystem.sesn_allphot.dat",
     "cfa4": "cfa4.lc.stdsystem.fi.ascii",
 }
 urls = {
     "cfa_snII": "https://lweb.cfa.harvard.edu/supernova/fmalcolm2017/",
     "cfa3": "https://lweb.cfa.harvard.edu/supernova/CfA3/",
-    "cfa3_4sh": "https://lweb.cfa.harvard.edu/supernova/",
+    "cfa_SECCSN": "https://lweb.cfa.harvard.edu/supernova/",
     "cfa4": "https://lweb.cfa.harvard.edu/supernova/CfA4/",
 }
 dir_name = {
     "cfa3": "CFA3",
-    "cfa3_4sh": "CFA3_4SH",
+    "cfa_SECCSN": "CFA_SECCSN",
     "cfa4": "CFA4",
     "cfa_snII": "CFA_SNII",
 }
 survey_specific_logic = {
     "cfa3": cfa_general_logic,
-    "cfa3_4sh": cfa_general_logic,
+    "cfa_SECCSN": cfa_general_logic,
     "cfa4": cfa_general_logic,
     "cfa_snII": cfa_snII_logic,
 }

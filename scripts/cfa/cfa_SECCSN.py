@@ -20,28 +20,28 @@ from datasets import Array2D, Features, Sequence, Value
 from datasets.data_files import DataFilesPatternsDict
 
 _CITATION = """\
-@ARTICLE{2012ApJS..200...12H,
-    author = {{Hicken}, Malcolm and {Challis}, Peter and {Kirshner}, Robert P. and {Rest}, Armin and {Cramer}, Claire E. and {Wood-Vasey}, W. Michael and {Bakos}, Gaspar and {Berlind}, Perry and {Brown}, Warren R. and {Caldwell}, Nelson and {Calkins}, Mike and {Currie}, Thayne and {de Kleer}, Kathy and {Esquerdo}, Gil and {Everett}, Mark and {Falco}, Emilio and {Fernandez}, Jose and {Friedman}, Andrew S. and {Groner}, Ted and {Hartman}, Joel and {Holman}, Matthew J. and {Hutchins}, Robert and {Keys}, Sonia and {Kipping}, David and {Latham}, Dave and {Marion}, George H. and {Narayan}, Gautham and {Pahre}, Michael and {Pal}, Andras and {Peters}, Wayne and {Perumpilly}, Gopakumar and {Ripman}, Ben and {Sipocz}, Brigitta and {Szentgyorgyi}, Andrew and {Tang}, Sumin and {Torres}, Manuel A.~P. and {Vaz}, Amali and {Wolk}, Scott and {Zezas}, Andreas},
-    title = "{CfA4: Light Curves for 94 Type Ia Supernovae}",
+@ARTICLE{2014ApJS..213...19B,
+    author = {{Bianco}, F.~B. and {Modjaz}, M. and {Hicken}, M. and {Friedman}, A. and {Kirshner}, R.~P. and {Bloom}, J.~S. and {Challis}, P. and {Marion}, G.~H. and {Wood-Vasey}, W.~M. and {Rest}, A.},
+    title = "{Multi-color Optical and Near-infrared Light Curves of 64 Stripped-envelope Core-Collapse Supernovae}",
     journal = {\apjs},
-    keywords = {supernovae: general, Astrophysics - Cosmology and Nongalactic Astrophysics},
-    year = 2012,
-    month = jun,
-    volume = {200},
+    keywords = {supernovae: general, Astrophysics - Solar and Stellar Astrophysics, Astrophysics - High Energy Astrophysical Phenomena},
+    year = 2014,
+    month = aug,
+    volume = {213},
     number = {2},
-    eid = {12},
-    pages = {12},
-    doi = {10.1088/0067-0049/200/2/12},
+    eid = {19},
+    pages = {19},
+    doi = {10.1088/0067-0049/213/2/19},
     archivePrefix = {arXiv},
-    eprint = {1205.4493},
-    primaryClass = {astro-ph.CO},
-    adsurl = {https://ui.adsabs.harvard.edu/abs/2012ApJS..200...12H},
+    eprint = {1405.1428},
+    primaryClass = {astro-ph.SR},
+    adsurl = {https://ui.adsabs.harvard.edu/abs/2014ApJS..213...19B},
     adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 """
 
 _DESCRIPTION = """\
-Time-series dataset from the Center for Astronomy 4 Data Release.
+Time-series dataset from the Center for Astronomy 3 Stripped-envelope Core-collapse SN Data Release.
 """
 
 _HOMEPAGE = "https://lweb.cfa.harvard.edu/supernova/"
@@ -58,23 +58,23 @@ _FLOAT_FEATURES = [
 ]
 
 
-class CFA4(datasets.GeneratorBasedBuilder):
+class CFA3_4SH(datasets.GeneratorBasedBuilder):
     """"""
 
     VERSION = _VERSION
 
     BUILDER_CONFIGS = [
         datasets.BuilderConfig(
-            name="cfa4",
+            name="cfa3_4sh",
             version=VERSION,
             data_files=DataFilesPatternsDict.from_patterns({"train": ["./*/*.hdf5"]}),
-            description="Light curves from CFA 4",
+            description="Light curves from CFA Stripped-envelope Core-collapse Supernova sample",
         ),
     ]
 
-    DEFAULT_CONFIG_NAME = "cfa4"
+    DEFAULT_CONFIG_NAME = "cfa3_4sh"
 
-    _bands = ["U", "B", "V", "R", "I", "r'", "i'"]
+    _bands = ["U", "B", "V", "R", "I", "r'", "i'", "J", "H", "Ks"]
 
     @classmethod
     def _info(self):
