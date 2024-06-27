@@ -2,6 +2,7 @@ numpy==1.26.4 # Numpy 2.0 breaks a bunch of things
 healpy
 datasets
 h5py 
+waiting
 
 # DESI dependencies
 fitsio==1.2.1 
