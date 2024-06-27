@@ -51,7 +51,7 @@ _VERSION = "1.0.0"
 class GZ10(datasets.GeneratorBasedBuilder):
     """TODO: Short description of my dataset."""
 
-    VERSION = datasets.Version("0.0.01")
+    VERSION = datasets.Version("0.0.1")
 
     BUILDER_CONFIGS = [
         datasets.BuilderConfig(
@@ -72,7 +72,7 @@ class GZ10(datasets.GeneratorBasedBuilder):
         ),
     ]
 
-    DEFAULT_CONFIG_NAME = "gz10_with_healpix"  # It's not mandatory to have a default configuration. Just use one if it make sense.
+    DEFAULT_CONFIG_NAME = "gz10_rgb_images"  # It's not mandatory to have a default configuration. Just use one if it make sense.
 
     _image_size = 256
     _n_samples = 17736

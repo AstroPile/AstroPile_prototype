@@ -17,7 +17,7 @@ fi
 
 # build the parent sample
 echo "Building parent hdf5 sample"
-if python build_parent_sample.py --manga_data_path . --output_dir out --num_processes 1 --tiny; then
+if python build_parent_sample.py --manga_data_path . --output_dir . --num_processes 1 --tiny; then
     echo "Building parent sample for manga succeeded"
 else
     echo "Building parent sample for manga failed"

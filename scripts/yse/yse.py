@@ -150,7 +150,7 @@ class YSEDR1(datasets.GeneratorBasedBuilder):
         datasets.BuilderConfig(
             name="yse_dr1",
             version=VERSION,
-            data_files=DataFilesPatternsDict.from_patterns({"train": ["./yse_data/healpix=*/*.hdf5"]}), # This seems fairly inflexible. Probably a massive failure point.
+            data_files=DataFilesPatternsDict.from_patterns({"train": ["./healpix=*/*.hdf5"]}), # This seems fairly inflexible. Probably a massive failure point.
             description="Light curves from YSE DR1",
         ),
     ]

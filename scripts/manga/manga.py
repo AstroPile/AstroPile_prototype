@@ -56,7 +56,7 @@ class MaNGA(datasets.GeneratorBasedBuilder):
     BUILDER_CONFIGS = [
         datasets.BuilderConfig(name="manga",
                                version=VERSION,
-                               data_files=DataFilesPatternsDict.from_patterns({'train': ['out/manga/healpix=*/*.hdf5']}),
+                               data_files=DataFilesPatternsDict.from_patterns({'train': ['manga/healpix=*/*.hdf5']}),
                                description="SDSS MaNGA IFU log data cubes"),
     ]
 

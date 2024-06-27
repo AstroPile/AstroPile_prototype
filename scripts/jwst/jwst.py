@@ -5105,6 +5105,8 @@ class JWST(datasets.GeneratorBasedBuilder):
             description="JADES GOODS-N",
         ),
     ]
+
+    DEFAULT_CONFIG_NAME = "ngdeep"
     
     def _info(self):
         """Defines the features available in this dataset."""
