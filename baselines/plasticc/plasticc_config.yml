@@ -1,0 +1,19 @@
+# informer architecture hyperparams
+dropout_rate: 0.2
+num_encoder_layers: 8
+num_decoder_layers: 8
+encoder_attention_heads: 12
+decoder_attention_heads: 12
+encoder_ffn_dim: 256
+decoder_ffn_dim: 256
+d_model: 768
+
+# data hyperparams
+prediction_length: 10
+context_length: 170
+lags: 
+  - 0
+freq: "1M"
+time_features:
+  - "month_of_year"
+batch_size: 128
